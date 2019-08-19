@@ -19,9 +19,6 @@ app.use(expressLayouts);
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
-/*app.use(function (req, res, next) {
-    res.status(404).send("Sorry can't find that!")
-});*/
 
 
 const mongoose = require('mongoose');
@@ -33,5 +30,22 @@ db.once('open', error => console.log('Connected to Mongoose'));
 app.use('/', indexRouter);
 app.use('/authors', authorRouter);
 app.use('/books', bookRouter);
+app.use(function(req, res, next){
+    res.status(404);
+    // respond with html page
+    if (req.accepts('html')) {
+        res.send('html not found');
+        //res.render('404', { url: req.url });
+        return;
+    }
+    // respond with json
+    if (req.accepts('json')) {
+        res.send('json not found');
+        //res.send({ error: 'Not found' });
+        return;
+    }
+    // default to plain-text. send()
+    res.type('txt').send('Not found');
+  });
 
 app.listen(process.env.PORT || 3000);

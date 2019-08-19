@@ -81,7 +81,6 @@ router.get('/:id/edit', async (req, res) => {
 //Update Book Route
 router.put('/:id', async (req, res) => {
     let book;
-    //saveCover(book, req.body.cover);
 
     try {
         book = await Book.findById(req.params.id);
@@ -154,7 +153,7 @@ async function renderFormPage(res, book, form, hasError = false) {
 }
 
 function saveCover(book, coverEncoded) {
-    if (coverEncoded == null) return;
+    if (coverEncoded == null || coverEncoded == '') return;
     const cover = JSON.parse(coverEncoded);
     if (cover != null && imageMimeTypes.includes(cover.type)) {
         book.coverImage = new Buffer.from(cover.data, 'base64');
