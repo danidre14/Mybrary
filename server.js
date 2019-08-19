@@ -19,6 +19,9 @@ app.use(expressLayouts);
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
+/*app.use(function (req, res, next) {
+    res.status(404).send("Sorry can't find that!")
+});*/
 
 
 const mongoose = require('mongoose');
