@@ -1,6 +1,7 @@
 @import 'shared/variables.css';
 @import 'shared/fonts.css';
 @import 'shared/header.css';
+@import 'shared/footer.css';
 @import 'shared/buttons.css';
 
 :root {
@@ -18,7 +19,7 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 800px;
   margin: auto;
   margin-bottom: 3rem;
 }

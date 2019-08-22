@@ -21,10 +21,18 @@ router.get('/', async (req, res) => {
     }
     try {
         const books = await query.exec();
-        res.render('books/index', {
-        books: books,
-        searchOptions: req.query
-        });
+
+        if(req.isAuthenticated()) 
+            res.render('books/index', {
+                uName: req.user.uName,
+                books: books,
+                searchOptions: req.query
+            });
+        else
+            res.render('books/index', {
+            books: books,
+            searchOptions: req.query
+            });
     } catch (e) {
         res.send(e);
         console.error(e)
@@ -34,7 +42,7 @@ router.get('/', async (req, res) => {
 
 //New Book Route
 router.get('/new', async (req, res) => {
-    renderNewPage(res, new Book());
+    renderNewPage(req, res, new Book());
 });
 
 //Create Book Route
@@ -52,7 +60,7 @@ router.post('/', async (req, res) => {
         const newBook = await book.save();
         res.redirect(`books/${newBook.id}`);
     } catch {
-        renderNewPage(res, book, true);
+        renderNewPage(req, res, book, true);
     }
 });
 
@@ -62,7 +70,10 @@ router.get('/:id', async (req, res) => {
         const book = await Book.findById(req.params.id)
                                 .populate('author')
                                 .exec();
-        res.render('books/show', { book: book });
+        if(req.isAuthenticated())
+            res.render('books/show', {uName: req.user.uName, book: book });
+        else
+            res.render('books/show', { book: book });
     } catch {
         res.redirect('/');
     }
@@ -72,7 +83,7 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/edit', async (req, res) => {
     try {
         const book = await Book.findById(req.params.id);
-        renderEditPage(res, book);
+        renderEditPage(req, res, book);
     } catch {
         res.redirect('/');
     }
@@ -96,7 +107,7 @@ router.put('/:id', async (req, res) => {
         res.redirect(`/books/${book.id}`);
     } catch {
         if(book != null) {
-            renderEditPage(res, book, true);
+            renderEditPage(req, res, book, true);
         } else {
             res.redirect('/');
         }
@@ -112,26 +123,33 @@ router.delete('/:id', async (req, res) => {
         await book.remove();
         res.redirect('/books');
     } catch {
-        if (book != null) {
-            res.render('books/show', {
-            book: book,
-            errorMessage: 'Could not remove book'
-            });
+        if (book != null) { 
+            if(req.isAuthenticated())
+                res.render('books/show', {
+                    uName: req.user.uName,
+                    book: book,
+                errorMessage: 'Could not remove book'
+                });
+            else
+                res.render('books/show', {
+                book: book,
+                errorMessage: 'Could not remove book'
+                });
         } else {
             res.redirect('/');
         }
     }
 });
 
-async function renderNewPage(res, book, hasError = false) {
-    renderFormPage(res, book, 'new', hasError);
+async function renderNewPage(req, res, book, hasError = false) {
+    renderFormPage(req, res, book, 'new', hasError);
 }
 
-async function renderEditPage(res, book, hasError = false) {
-    renderFormPage(res, book, 'edit', hasError);
+async function renderEditPage(req, res, book, hasError = false) {
+    renderFormPage(req, res, book, 'edit', hasError);
 }
 
-async function renderFormPage(res, book, form, hasError = false) {
+async function renderFormPage(req, res, book, form, hasError = false) {
     try {
         const authors = await Author.find({});
         const params = {
@@ -145,6 +163,9 @@ async function renderFormPage(res, book, form, hasError = false) {
                 params.errorMessage = "Error Creating Book";
             }
         }
+
+        if(req.isAuthenticated())
+            params.uName =  req.user.uName,
     
         res.render(`books/${form}`, params);
     } catch {

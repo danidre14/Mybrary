@@ -11,10 +11,17 @@ router.get('/', async (req, res) => {
     }
     try{
         const authors = await Author.find(searchOptions);
-        res.render('authors/index', {
-            authors: authors,
-            searchOptions: req.query
-        });
+        if(req.isAuthenticated())
+            res.render('authors/index', {
+                uName: req.user.uName,
+                authors: authors,
+                searchOptions: req.query
+            });
+        else
+            res.render('authors/index', {
+                authors: authors,
+                searchOptions: req.query
+            });
     } catch {
         res.redirect('/');
     }
@@ -22,7 +29,10 @@ router.get('/', async (req, res) => {
 
 //New Autor Route
 router.get('/new', (req, res) => {
-    res.render('authors/new', { author: new Author()});
+    if(req.isAuthenticated())
+        res.render('authors/new', {uName: req.user.uName, author: new Author()});
+    else    
+        res.render('authors/new', { author: new Author()});
 });
 
 //Create Author Route
@@ -34,10 +44,17 @@ router.post('/', async (req, res) => {
         const newAuthor = await author.save();
         res.redirect(`authors/${newAuthor.id}`);
     } catch {
-        res.render('authors/new', {
-            author: author,
-            errorMessage: 'Error creating Author'
-        });
+        if(req.isAuthenticated())
+            res.render('authors/new', {
+                uName: req.user.uName,
+                author: author,
+                errorMessage: 'Error creating Author'
+            });
+        else
+            res.render('authors/new', {
+                author: author,
+                errorMessage: 'Error creating Author'
+            });
     }
 });
 
@@ -46,10 +63,17 @@ router.get('/:id', async (req, res) => {
     try {
         const author = await Author.findById(req.params.id);
         const books = await Book.find({ author: author.id }).limit(6).exec();
-        res.render('authors/show', {
-            author: author,
-            booksByAuthor: books
-        });
+        if(req.isAuthenticated())
+            res.render('authors/show', {
+                uName: req.user.uName,
+                author: author,
+                booksByAuthor: books
+            });
+        else
+            res.render('authors/show', {
+                author: author,
+                booksByAuthor: books
+            });
     } catch {
         res.redirect('/');
     }
@@ -58,8 +82,11 @@ router.get('/:id', async (req, res) => {
 //using rest principles
 router.get('/:id/edit', async (req, res) => {
     try {
-        const author = await Author.findById(req. params.id);
-        res.render('authors/edit', { author: author });
+        const author = await Author.findById(req.params.id);
+        if(req.isAuthenticated())
+            res.render('authors/edit', { uName: req.user.uName, author: author });
+        else               
+            res.render('authors/edit', { author: author });
     } catch {
         res.redirect('/authors');
     }
@@ -77,10 +104,17 @@ router.put('/:id', async (req, res) => {
         if(author == null) {
             res.redirect('/');
         } else {
-            res.render('authors/edit', {
-                author: author,
-                errorMessage: 'Error updating Author'
-            });
+            if(req.isAuthenticated())
+                res.render('authors/edit', {
+                    uName: req.user.uName,
+                    author: author,
+                    errorMessage: 'Error updating Author'
+                });
+            else
+                res.render('authors/edit', {
+                    author: author,
+                    errorMessage: 'Error updating Author'
+                });
         }
     }
 })

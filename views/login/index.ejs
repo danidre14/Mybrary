@@ -1,0 +1,19 @@
+<h2 class="page-header">Login Page</h2>
+<% if(messages.error) {%>
+    <%= messages.error %>
+<% } %>
+<form action="/login" method="POST">
+    <div>
+        <label for="uName">Username</label>
+        <input type="text" id="uName" name="uName" autocomplete="off" required>
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="off" required>
+    </div>
+    <button class="btn btn-primary" type="submit">Login</button>
+</form>
+<br/>
+<div> Don't have an account? </div>
+<br/>
+<a class="btn btn-primary" href='/register'>Sign Up</a>

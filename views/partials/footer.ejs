@@ -1,0 +1,15 @@
+<% var uName; %>
+<header>
+    <nav class="footer-nav">
+        <a class="footer-title" href="/">Mybrary</a>
+        <ul>
+            <li><a href="/books/new">Add Books</a></li>
+            <li><a href="/authors/new">Add Authors</a></li>
+            <% if(uName !== undefined) {%>
+                <form action="logout?_method=DELETE" method="POST">
+                    <li><button type="submit">Log Out</button></li>
+                </form>
+            <%}%>
+        </ul>
+    </nav>
+</header>
